@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: DejaVu Sans, Arial, "Helvetica", Arial, "Liberation Sans", sans-serif;
+}
+
+body {
+    font-family: "Lato", sans-serif;
+    padding: 30px;
+    font-size: 14px;
+}
+
+.font-color-gray {
+    color: #7a7a7a;
+}
+
+.main-heading {
+    font-size: 34px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.header-right {
+    text-align: right;
+    vertical-align: top;
+    width: 50%;
+}
+
+.logo, .hospital-name {
+    margin-bottom: 8px;
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+.address {
+    margin-top: 60px;
+    width: 100%;
+}
+
+.address tr:first-child td {
+    padding-bottom: 10px;
+}
+
+.items-table {
+    width: 100%;
+    border: 0;
+    border-collapse: collapse;
+    margin-top: 40px;
+}
+
+.items-table thead {
+    background: #2f353a;
+    color: #fff;
+}
+
+.items-table td, 
+.items-table th {
+    padding: 8px;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+    vertical-align: top;
+}
+
+.bill-footer {
+    margin-top: 15px;
+    width: 80%;
+    float: right;
+    text-align: right;
+    margin-right: 8px;
+}
+
+.number-align {
+    text-align: right !important;
+}
+
+/* bill table */
+.patient-details {
+    vertical-align: top;
+}
+
+.patient-detail-one td, 
+.patient-detail-two td {
+    padding: 5px;
+}
+
+.patient-detail-heading {
+    font-size: medium;
+}
+
+.bill-summary {
+    width: 5%;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.pdf-header {
+    width: 100%;
+    display: inline-block;
+    clear:both;
+}
+
+.header-left {
+    width: 20%;
+}
+
+.header-right {
+    width: 79%;
+}
+
+.mt-32 {
+    margin-top: 32px;
+}
+
+.mt-16 {
+    margin-top: 32px;
+}
+
+.pdf-body-left {
+    width: 30%;
+    display: inline-block;
+}
+
+.pdf-body-right {
+    width: 69%;
+    text-align: right;
+    display: inline-block;
+}
+
+.transaction-total {
+    margin-top: 16px;
+    text-align: right;
+    margin-right: 8px;
+}
+
+.logo-header {
+    width: 100%;
+    display: inline-block;
+}
+
+.transaction-note {
+    margin-top: 16px;
+}
+
+.ck-content .image-style-side {
+    max-width: 50%;
+    float: right;
+}
+
+.ck-content .image.image_resized {
+    max-width: 100%;
+}
+
+.ck-content .image.image_resized {
+    display: block;
+    box-sizing: border-box;
+}
+
+.ck-content .image.image_resized img {
+    width: 100%;
+    height: auto;
+}
+
+.ck-content .image.image_resized > figcaption {
+    display: block;
+}
+
+.ck-content .table{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ck-table-resized {
+    width: 100%;
+}
+
+
+.page-break {
+    page-break-before: always;
+}
