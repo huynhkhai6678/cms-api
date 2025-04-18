@@ -1,69 +1,65 @@
-const fs = require('fs');
-const path = require('path');
-const parser = require('php-parser');
+import fs from 'fs-extra';
+import path from 'path';
+import phpParser from 'php-parser';
 
-const phpParser = new parser.Engine({
-  parser: {
-    extractDoc: true,
-    php7: true
-  },
-  ast: {
-    withPositions: false
-  }
+const __dirname = path.resolve();
+
+const parser = new phpParser.Engine({
+  parser: { extractDoc: true },
+  ast: { withPositions: false },
 });
 
-function phpArrayToJson(ast) {
+const langPath = path.join(__dirname, "resources"); // your Laravel lang folder
+const outputPath = path.join(__dirname, "lang-json");
+
+fs.ensureDirSync(outputPath);
+
+function phpArrayToJson(astNode) {
+  const result = {};
+  for (const item of astNode.items) {
+    const key = item.key.value;
+    if (item.value.kind === "array") {
+      result[key] = phpArrayToJson(item.value);
+    } else if (item.value.kind === "string") {
+      result[key] = item.value.value;
+    } else {
+      result[key] = null;
+    }
+  }
+  return result;
+}
+
+function parseLangFolder(langDir) {
+  const files = fs.readdirSync(langDir).filter(f => f.endsWith(".php"));
   const result = {};
 
-  if (ast.kind === 'program') {
-    const returnStmt = ast.children.find(node => node.kind === 'return');
-    if (returnStmt && returnStmt.expr.kind === 'array') {
-      return parseArray(returnStmt.expr);
+  for (const file of files) {
+    const content = fs.readFileSync(path.join(langDir, file), "utf8");
+
+    try {
+      const ast = parser.parseCode(content);
+      const returnNode = ast.children.find(n => n.kind === "return");
+
+      if (returnNode && returnNode.expr.kind === "array") {
+        const key = path.basename(file, ".php");
+        result[key] = phpArrayToJson(returnNode.expr);
+      }
+    } catch (e) {
+      console.error(e);
+      console.error(`Failed to parse ${file}:`, e.message);
     }
   }
 
   return result;
 }
 
-function parseArray(arr) {
-  const result = {};
-  arr.items.forEach(item => {
-    const key = getValue(item.key);
-    const value = getValue(item.value);
-    result[key] = value;
-  });
-  return result;
-}
-
-function getValue(node) {
-  if (!node) return null;
-
-  if (node.kind === 'string' || node.kind === 'number') {
-    return node.value;
+// Loop through each language folder
+fs.readdirSync(langPath).forEach(lang => {
+  const langDir = path.join(langPath, lang);
+  if (fs.statSync(langDir).isDirectory()) {
+    const jsonData = parseLangFolder(langDir);
+    const outputFile = path.join(outputPath, `${lang}.json`);
+    fs.writeJsonSync(outputFile, jsonData, { spaces: 2 });
+    console.log(`Generated: ${outputFile}`);
   }
-
-  if (node.kind === 'array') {
-    return parseArray(node);
-  }
-
-  return null;
-}
-
-function convertPhpLangFileToJson(inputPath, outputPath) {
-  const phpCode = fs.readFileSync(inputPath, 'utf8');
-  const ast = phpParser.parseCode(phpCode);
-  const json = phpArrayToJson(ast);
-
-  fs.writeFileSync(outputPath, JSON.stringify(json, null, 2), 'utf8');
-  console.log(`✅ Converted: ${inputPath} ➝ ${outputPath}`);
-}
-
-// Usage example:
-const langs = ['en', 'de']; // Add your language folders here
-const namespace = 'messages'; // Laravel file name
-
-langs.forEach(lang => {
-  const inputFile = path.join(__dirname, 'resources', 'lang', lang, `${namespace}.php`);
-  const outputFile = path.join(__dirname, 'locales', lang, `${namespace}.json`);
-  convertPhpLangFileToJson(inputFile, outputFile);
 });

@@ -1,5 +1,5 @@
 import express from "express";
-import clinicController from "../controllers/clinicController.js";
+import clinicController from "../controllers/ClinicController.js";
 import validateRequest from "../middlewares/validateRequest.js";
 import clinicValidation from "../validations/clinicValidation.js";
 import authMiddleware from "../middlewares/authMiddleware.js";

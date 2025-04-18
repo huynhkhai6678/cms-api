@@ -16,7 +16,7 @@ const getClinicList = async (page = 1, limit = 10, search = '', orderBy = 'clini
 
   const where = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
 
-  const allowedOrderFields = ['clinics.name', 'dress1', 'states.name', 'clinics.created_at'];
+  const allowedOrderFields = ['clinics.name', 'addresses.address1', 'states.name', 'clinics.created_at'];
   const allowedOrderDirections = ['asc', 'desc'];
 
   const safeOrderBy = allowedOrderFields.includes(orderBy) ? orderBy : 'clinics.created_at';
@@ -33,7 +33,7 @@ const getClinicList = async (page = 1, limit = 10, search = '', orderBy = 'clini
 
   // Fetch data with pagination
   const [rows] = await db.query(
-    `SELECT clinics.id, clinics.name, clinics.type, addresses.address1, addresses.postal_code, clinics.region_code, clinics.phone, states.name FROM clinics 
+    `SELECT clinics.id, clinics.name, clinics.type, addresses.address1, addresses.postal_code, clinics.region_code, clinics.phone, states.name as state_name FROM clinics 
     join addresses on addresses.owner_id = clinics.id 
     join states on states.id = addresses.state_id 
     ${where} ORDER BY ${safeOrderBy} ${safeOrder} LIMIT ? OFFSET ?`,
@@ -49,6 +49,10 @@ const getClinicList = async (page = 1, limit = 10, search = '', orderBy = 'clini
       totalPages: Math.ceil(total / limit),
     },
   };
+};
+
+const getClinicByLandingName = (landingName = 'default') => {
+  return db.query('SELECT * FROM clinics where landing_name = ?', [landingName]);
 };
 
 const getClinicById = (id) => {
@@ -67,6 +71,7 @@ const deleteClinic = (id) => {
 
 export default  {
   getClinicList,
+  getClinicByLandingName,
   getAllClinics,
   getClinicById,
   createClinic,

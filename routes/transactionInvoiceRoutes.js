@@ -1,5 +1,5 @@
 import express from "express";
-import transactionInvoiceController from "../controllers/transactionInvoiceController.js";
+import transactionInvoiceController from "../controllers/TransactionInvoiceController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
 import path from 'path';

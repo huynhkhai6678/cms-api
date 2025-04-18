@@ -1,9 +1,9 @@
 import fs from "fs";
-import TransactionInvoice from "../models/transactionInvoiceModel.js";
+import TransactionInvoice from "../models/TransactionInvoiceModel.js";
 import currencyModel from "../models/currencyModel.js";
-import settingModel from "../models/settingModel.js";
+import settingModel from "../models/SettingModel.js";
 import documentSettingModel from "../models/documentSettingModel.js";
-import transactionInvoiceServiceModel from "../models/transactionInvoiceServiceModel.js";
+import TransactionInvoiceService from "../models/TransactionInvoiceServiceModel.js";
 import generatePDF from "../utils/pdfGenerator.js";
 import helper from "../utils/helpers.js";
 import moment from "moment";
@@ -20,7 +20,7 @@ const exportTransaction = async (req, res) => {
   const currencyId = getClinicSettingValue(settings, 'currency');
   const [currency] = await currencyModel.getCurrencyById(currencyId);
 
-  const [services] = await transactionInvoiceServiceModel.findAllServiceOfTransaction(transaction.id);
+  const [services] = await TransactionInvoiceService.findAllServiceOfTransaction(transaction.id);
 
   let templateData = {
     'invoice_number': transaction.invoice_number,
