@@ -1,15 +1,20 @@
 import express from "express";
 import i18next from "./i18n.js";
 
-import clinicRoutes from "./routes/ClinicRoutes.js";
-import authRoutes from "./routes/AuthRoutes.js";
-import transactionRoutes from "./routes/TransactionInvoiceRoutes.js";
-import frontRoutes from "./routes/FrontRoutes.js";
-import enquiryRoutes from "./routes/EnquiryRoutes.js";
-import subcribeRoutes from "./routes/SubcribeRoutes.js";
+import clinicRoutes from "./routes/clinic.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import transactionRoutes from "./routes/transaction-invoice.route.js";
+import ProfileRoutes from "./routes/profile.routes.js";
+import frontRoutes from "./routes/front.routes.js";
+import enquiryRoutes from "./routes/enquiry.routes.js";
+import subcribeRoutes from "./routes/subcribe.routes.js";
+import stateRoutes from "./routes/state.routes.js";
+import cityRoutes from "./routes/city.routes.js";
 
 import path from "path";
 import cors from 'cors';
+
+import db from './models/index.js';
 
 const __dirname = path.resolve();
 const app = express();
@@ -20,6 +25,12 @@ app.use((req, res, next) => {
   req.t = i18next.getFixedT(lang);
   next();
 });
+
+
+db.sequelize.sync().then(() => {
+  console.log('Synced DB.');
+});
+
 
 //Serve static file
 app.use(express.static(path.join(__dirname, 'public')));
@@ -37,6 +48,10 @@ app.use('/auth', authRoutes);
 app.use('/clinics', clinicRoutes);
 app.use('/subscribes', subcribeRoutes);
 app.use('/transactions', transactionRoutes);
+app.use('/profile', ProfileRoutes);
+
+app.use('/states', stateRoutes);
+app.use('/cities', cityRoutes);
 
 const port = 4000;
 app.listen(port, () => {
