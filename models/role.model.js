@@ -39,6 +39,7 @@ export default (sequelize, DataTypes) => {
             },
         },
         {
+            tableName: 'roles',
             createdAt: 'created_at',
             updatedAt: 'updated_at',
         }

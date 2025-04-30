@@ -7,60 +7,35 @@ export default (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true,
             },
-            name: {
+            user_id : {
+                type: DataTypes.BIGINT(20),
+                allowNull: false,
+            },
+            experience: {
+                type: DataTypes.DOUBLE,
+            },
+            twitter_url: {
                 type: DataTypes.STRING,
-                allowNull: false,
             },
-            phone: {
+            linkedin_url: {
                 type: DataTypes.STRING,
-                allowNull: false,
             },
-            default: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-            },
-            created_at: {
-                type: DataTypes.DATE,
-                allowNull: true,
-            },
-            updated_at: {
-                type: DataTypes.DATE,
-                allowNull: true,
-            },
-            code: {
+            instagram_url: {
                 type: DataTypes.STRING,
-                allowNull: false,
-            },
-            landing_name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            region_code: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            email: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            social_link: {
-                type: DataTypes.STRING,
-                allowNull: true,
-            },
-            country_id: {
-                type: DataTypes.BIGINT.UNSIGNED,
-                allowNull: false,
-            },
-            type: {
-                type: DataTypes.TINYINT,
-                allowNull: false,
-            },
+            }
         },
         {
+            tableName: 'doctors',
             createdAt: 'created_at',
             updatedAt: 'updated_at',
         }
     );
+
+    Doctor.associate = (models) => {
+        Doctor.belongsTo(models.User, { foreignKey: 'user_id' });
+        Doctor.hasMany(models.DoctorSpecialization, { foreignKey: 'doctor_id'});
+        Doctor.hasMany(models.Appointment, { foreignKey: 'doctor_id' });
+    };
 
     return Doctor;
 };

@@ -17,6 +17,7 @@ export default (sequelize, DataTypes) => {
             },
         },
         {
+            tableName: 'permissions',
             createdAt: 'created_at',
             updatedAt: 'updated_at',
         }

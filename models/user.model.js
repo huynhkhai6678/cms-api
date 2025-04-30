@@ -160,6 +160,8 @@ export default (sequelize, DataTypes) => {
             owner_type: 'App\\Models\\User'
           }
         });
+
+        User.hasMany(models.UserClinic, { foreignKey: 'user_id' })
     };
 
     return User;

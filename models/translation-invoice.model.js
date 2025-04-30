@@ -64,6 +64,7 @@ export default (sequelize, DataTypes) => {
         },
     },
     {
+        tableName: 'transaction_invoices',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
     });

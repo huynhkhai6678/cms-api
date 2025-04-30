@@ -2,7 +2,7 @@ export default (sequelize, DataTypes) => {
     const Address = sequelize.define('Address', 
     {
         owner_id: {
-            type: DataTypes.STRING,
+            type: DataTypes.BIGINT(20),
             allowNull: true
         },
         owner_type: {
@@ -18,15 +18,15 @@ export default (sequelize, DataTypes) => {
             allowNull: true
         },
         country_id: {
-            type: DataTypes.BIGINT(0),
+            type: DataTypes.BIGINT(20),
             allowNull: true
         },
         state_id: {
-            type: DataTypes.BIGINT(0),
+            type: DataTypes.BIGINT(20),
             allowNull: true
         },
         city_id: {
-            type: DataTypes.BIGINT(0),
+            type: DataTypes.BIGINT(20),
             allowNull: true
         },
         postal_code: {
@@ -56,9 +56,22 @@ export default (sequelize, DataTypes) => {
         }
     },
     {
+        tableName: 'addresses',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
     });
+
+    Address.associate = (models) => {
+        Address.belongsTo(models.Clinic, { 
+            foreignKey: 'owner_id',
+            as: 'clinic'
+        });
+
+        Address.belongsTo(models.State, {
+            foreignKey: 'state_id',
+            as: 'state'
+        });
+    };
 
     return Address;
 };

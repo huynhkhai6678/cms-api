@@ -1,12 +1,16 @@
 export default (sequelize, DataTypes) => {
+    const CATEGORY_GENERAL = 1;
+    const CATEGORY_DENTAL = 2;
+    const CATEGORY_SPECIALIST = 3;
+
+    const CATEGORIES = {
+        [CATEGORY_GENERAL]: 'General Practice',
+        [CATEGORY_DENTAL]: 'Dental',
+        [CATEGORY_SPECIALIST]: 'Specialist',
+    };
+
     const Clinic = sequelize.define('Clinic',
         {
-            id: {
-                type: DataTypes.BIGINT.UNSIGNED,
-                allowNull: false,
-                primaryKey: true,
-                autoIncrement: true,
-            },
             name: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
@@ -46,6 +50,9 @@ export default (sequelize, DataTypes) => {
             type: {
                 type: DataTypes.TINYINT,
                 allowNull: false,
+                get() {
+                    return CATEGORIES[this.getDataValue('type')];
+                }
             },
             created_at: {
                 type: DataTypes.DATE,
@@ -57,10 +64,22 @@ export default (sequelize, DataTypes) => {
             },
         },
         {
+            tableName: 'clinics',
             createdAt: 'created_at',
             updatedAt: 'updated_at',
-        }
+        },
     );
+
+    Clinic.associate = (models) => {
+        Clinic.hasOne(models.Address, {
+            foreignKey: 'owner_id',
+            constraints: false,
+            as: 'address',
+            scope: {
+              owner_type: 'App\\Models\\Clinic'
+            }
+        });
+    };
 
     return Clinic;
 };

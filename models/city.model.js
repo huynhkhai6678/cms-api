@@ -11,6 +11,7 @@ export default (sequelize, DataTypes) => {
         },
     },
     {
+        tableName: 'cities',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
     });

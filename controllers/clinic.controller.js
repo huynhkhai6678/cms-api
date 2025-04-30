@@ -1,65 +1,54 @@
 import Clinic from "../models/ClinicModel.js";
+import db from '../models/index.js';
+import paginateAndSearch from '../utils/table.js';
 
 async function getAllClinics(req, res) {
-  try {
-    const [users] = await Clinic.getAllClinics();
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+ 
 };
 
 async function getClinicById(req, res) {
-  try {
-
-    const clinicId = 0;
-    let clinic = null;
-    if (clinicId) {
-      const [clinic] = await Clinic.getClinicById(req.params.id);
-
-      if(!clinic.length) {
-        res.status(401).json({ error: 'Invalid request' });
-      }
-      clinic = clinic[0];
-    }
-
-    const [countries] = await Country.getAllCountry();
-    
-    res.json({
-      clinic,
-      countries : countries
-    });
-
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  
 };
 
 async function createClinic(req, res) {
-  const { name, email } = req.body;
-  try {
-    await Clinic.createClinic(name, email);
-    res.status(201).json({ message: 'Clinic created successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  
 };
 
 async function deleteClinic(req, res) {
-  try {
-    await Clinic.deleteClinic(req.params.id);
-    res.json({ message: 'Clinic deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+ 
 };
 
 async function getClinicList(req, res) {
     try {
-        const { page = 1, limit = 10, search = '' } = req.query;
-        let response = await Clinic.getClinicList(page, limit, search);
-        res.json(response);
+        const result = await paginateAndSearch({
+          model: db.Clinic,
+          searchFields: [
+            'name',
+            '$address.address1$',
+            '$address.state.name$',
+            'phone',
+          ],
+          filterFields: ['name', 'type'],
+          include: [
+            {
+              model: db.Address,
+              as: 'address',
+              include: [
+                {
+                  model: db.State,
+                  as: 'state',
+                },
+              ],
+            },
+          ],
+          query: req.query,
+          allowedOrderFields: ['name', 'address.address1', 'address.state.name', 'created_at'],
+          defaultOrderField: 'created_at',
+          defaultOrderDirection: 'DESC',
+        });
+
+        res.json(result);
+
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

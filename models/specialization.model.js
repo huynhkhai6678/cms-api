@@ -11,9 +11,14 @@ export default (sequelize, DataTypes) => {
         },
     },
     {
+        tableName: 'specializations',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
     });
+
+    Specialization.associate = (models) => {
+        Specialization.hasMany(models.DoctorSpecialization, { foreignKey: 'specialization_id'});
+    };
 
     return Specialization;
 };

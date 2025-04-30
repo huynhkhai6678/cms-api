@@ -34,6 +34,7 @@ export default (sequelize, DataTypes) => {
         },
     },
     {
+        tableName: 'enquiries',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
     });

@@ -1,16 +1,16 @@
-import Doctor from "../models/DoctorModel.js";
-import Clinic from "../models/ClinicModel.js";
-
 import db from '../models/index.js';
-
+import sequelize from 'sequelize';
 
 const getSettingByClinic = async (req, res) => {
   try {
-    const [clinics] = await Clinic.getClinicByLandingName(req.query.name);
+    const clinic = await db.Clinic.findOne({
+      where : {
+        'landing_name' :  req.query.name
+      }
+    });
 
-    if (!clinics.length) return res.status(404).json({ message: 'Invalid clinic' });
+    if (!clinic) return res.status(404).json({ message: 'Invalid clinic' });
 
-    const clinic = clinics[0];
     const settings = await db.Setting.findAll({where: {
       clinic_id: clinic.id,
     }});
@@ -54,14 +54,28 @@ const getServiceCounter = async (req, res) => {
       },
     });
 
-    const [doctorCount] = await Doctor.countDoctorByClinicId(clinicId);
+    // const [doctorCount] = await Doctor.countDoctorByClinicId(clinicId);
+    const doctorCount = await db.Doctor.count({
+      include: [
+        {
+          model: db.User,
+          required: true,
+          include: [
+            {
+              model: db.UserClinic,
+              where: { clinic_id: clinicId },
+              required: true
+            }
+          ]
+        }
+    ]});
 
     res.json({
       data : {
         'patients': patientCount,
         'specializations' : specializationCount,
         'services' : serviceCount,
-        'doctors' : doctorCount[0].doctorCount
+        'doctors' : doctorCount
       }
     });
 
@@ -73,14 +87,53 @@ const getServiceCounter = async (req, res) => {
 const getDoctors = async (req, res) => {
   try {
     const clinicId = req.params.clinicId;
-    const [doctors] = await Doctor.getFrontDoctorByClinicId(clinicId);
+    const doctors = await db.Doctor.findAll({
+      include: [
+        {
+          model: db.User,
+          where: {
+            status: 1
+          },
+          include: [
+            {
+              model: db.UserClinic,
+              where: { clinic_id: clinicId },
+              required: true
+            }
+          ]
+        },
+        {
+          model: db.DoctorSpecialization,
+          include: [
+            {
+              model: db.Specialization
+            }
+          ]
+        }
+      ]
+    });
+
+    const result = doctors.map(doctor => {
+      const user = doctor.User;
+      const minSpecialization = doctor.DoctorSpecializations.reduce((min, ds) => {
+        if (!min || ds.Specialization.id < min.id) return ds.Specialization;
+        return min;
+      }, null);
+    
+      return {
+        user_id: user.id,
+        doctor_id: doctor.id,
+        name: `${user.first_name} ${user.last_name}`,
+        specialization: minSpecialization?.name,
+        avatar: 'web/media/avatars/male.png' // You can replace this with media file if exists
+      };
+    });
 
     res.json({
-      data : doctors
+      data : result
     });
 
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -88,10 +141,64 @@ const getDoctors = async (req, res) => {
 const getTopDoctors = async (req, res) => {
   try {
     const clinicId = req.params.clinicId;
-    const [doctors] = await Doctor.getFrontDoctorByClinicId(clinicId);
+
+    const topDoctors = await db.Doctor.findAll({
+      attributes: {
+        include: [
+          [sequelize.fn('COUNT', sequelize.col('Appointments.id')), 'appointmentCount']
+        ]
+      },
+      include: [
+        {
+          model: db.User,
+          where: {
+            status: 1
+          },
+          include: [
+            {
+              model: db.UserClinic,
+              where: { clinic_id: clinicId },
+              required: true
+            }
+          ]
+        },
+        {
+          model: db.DoctorSpecialization,
+          include: [
+            {
+              model: db.Specialization
+            }
+          ]
+        },
+        {
+          model: db.Appointment,
+          attributes: [],
+        }
+      ],
+      group: ['Doctor.id'],
+      order: [[sequelize.literal('appointmentCount'), 'DESC']],
+      limit: 3,
+      subQuery: false,
+    });
+
+    const result = topDoctors.map(doctor => {
+      const user = doctor.User;
+      const minSpecialization = doctor.DoctorSpecializations.reduce((min, ds) => {
+        if (!min || ds.Specialization.id < min.id) return ds.Specialization;
+        return min;
+      }, null);
+    
+      return {
+        user_id: user.id,
+        doctor_id: doctor.id,
+        name: `${user.first_name} ${user.last_name}`,
+        specialization: minSpecialization?.name,
+        avatar: 'web/media/avatars/male.png' // To do add file
+      };
+    });
 
     res.json({
-      data : doctors
+      data : result
     });
 
   } catch (err) {
@@ -111,7 +218,6 @@ const getServices = async (req, res) => {
     });
 
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -151,6 +257,10 @@ const getLanding = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+const getAllDoctor = async (req, res) => {
+
+}
 
 export default {
   getSettingByClinic,

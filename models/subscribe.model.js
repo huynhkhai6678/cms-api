@@ -15,6 +15,7 @@ export default (sequelize, DataTypes) => {
         },
     },
     {
+        tableName: 'subscribes',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
     });

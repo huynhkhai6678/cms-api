@@ -46,7 +46,7 @@ const getProfile = async (req, res) => {
             attributes: ['address1', 'address2', 'city_id', 'country_id', 'state_id']
           },
         ],
-        attributes: ['first_name', 'last_name', 'email', 'time_zone', 'gender', 'contact', 'region_code', 'dob']
+        attributes: ['first_name', 'last_name', 'email', 'time_zone', 'gender', 'contact', 'region_code', 'dob', 'blood_group']
       },
     );
 
@@ -78,8 +78,21 @@ const getProfile = async (req, res) => {
 
     res.status(200).json({ 
       data: {
-        ...user.address?.dataValues,
-        ...user.dataValues
+        contact: `${user.contact}`,
+        region_code: `${user.region_code}`,
+        dob: user.dob,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        gender: user.gender,
+        blood_group: parseInt(user.blood_group),
+        time_zone: parseInt(user.time_zone),
+        address1: user.address?.address1,
+        address2: user.address?.address2,
+        country_id: user.address?.country_id,
+        state_id: user.address?.state_id,
+        city_id: user.address?.city_id,
+        postal_code: user.address?.postal_code,
       },
       countries,
       states,
@@ -94,14 +107,25 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   const upload = FileUpload.getUploadLocation('avatar', 'clinic-' + req.user.data.clinic_id + '-profile');
-  upload(req, res, function (err) {
+  upload(req, res, async function (err) {
     if (err) {
       return res.status(500).send('File upload error.');
     }
 
-    const { first_name, last_name } = req.body;
+    let user = await db.User.findByPk(req.user.data.id);
+    const { first_name, last_name, email, region_code, contact, time_zone, dob, blood_group, gender } = req.body;
+    const { address1, address2, country_id, state_id, city_id, postal_code } = req.body;
 
-    console.log(req.body);
+    const userParams = { first_name, last_name, email, time_zone, dob, blood_group, gender, region_code, contact };
+    const addressParams = { address1, address2, country_id, state_id, city_id, postal_code };
+
+
+    console.log(userParams);
+    user.set(userParams);
+    user.save();
+
+    console.log(user.Address);
+
 
     res.status(201).json({ message: 'Update user theme successfully' });
   });
