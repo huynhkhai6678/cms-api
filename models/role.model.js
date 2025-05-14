@@ -23,6 +23,7 @@ export default (sequelize, DataTypes) => {
             guard_name: {
                 type: DataTypes.STRING(191),
                 allowNull: false,
+                defaultValue: 'web'
             },
             created_at: {
                 type: DataTypes.DATE,
@@ -47,9 +48,10 @@ export default (sequelize, DataTypes) => {
 
     Role.associate = (models) => {
         Role.belongsToMany(models.Permission, {
-            through: 'role_has_permissions',
+            through: models.RoleHasPermission,
             foreignKey: 'role_id',
             otherKey: 'permission_id',
+            as: 'permissions'
         });
     };
 

@@ -35,24 +35,28 @@ export default (sequelize, DataTypes) => {
         },
         other_region_code: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue : '',
         },
         other_contact: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue : '',
         },
         other_address1: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue : '',
         },
         other_address2: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue : '',
         },
         other_country_id: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            default: 1
+            defaultValue: 1
         }
     },
     {

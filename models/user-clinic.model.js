@@ -17,5 +17,10 @@ export default (sequelize, DataTypes) => {
         }
     );
 
+    UserClinic.associate = (models) => {
+        UserClinic.belongsTo(models.User, { foreignKey: 'user_id' });
+        UserClinic.belongsTo(models.Clinic, { as: 'clinic', foreignKey: 'clinic_id' });
+    };
+
     return UserClinic;
 };

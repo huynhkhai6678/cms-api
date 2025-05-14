@@ -23,7 +23,7 @@ async function login(req, res) {
       email: email
     }
   });
-
+  
   const isMatch = await bcrypt.compare(password, currentUser.password);
   if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
@@ -32,6 +32,7 @@ async function login(req, res) {
     include: [
       {
         model: db.Permission,
+        as: 'permissions',
         attributes: ['name'],
         through: { attributes: [] }, // Hide pivot table fields
       }
@@ -62,7 +63,7 @@ async function login(req, res) {
   res.json({
     token,
     data,
-    permissions: role.Permissions.map(p => p.name)
+    permissions: role.permissions.map(p => p.name)
   });
 
 };

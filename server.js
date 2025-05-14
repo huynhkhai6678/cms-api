@@ -10,6 +10,11 @@ import enquiryRoutes from "./routes/enquiry.routes.js";
 import subcribeRoutes from "./routes/subcribe.routes.js";
 import stateRoutes from "./routes/state.routes.js";
 import cityRoutes from "./routes/city.routes.js";
+import clinicChainRoutes from "./routes/clinic-chain.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import currencyRoutes from "./routes/currency.routes.js";
+import roleRoutes from "./routes/role.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 import path from "path";
 import cors from 'cors';
@@ -49,7 +54,11 @@ app.use('/clinics', clinicRoutes);
 app.use('/subscribes', subcribeRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/profile', ProfileRoutes);
-
+app.use('/clinic-chains', clinicChainRoutes);
+app.use('/users', userRoutes);
+app.use('/currencies', currencyRoutes);
+app.use('/roles', roleRoutes);
+app.use('/dashboard', dashboardRoutes);
 app.use('/states', stateRoutes);
 app.use('/cities', cityRoutes);
 

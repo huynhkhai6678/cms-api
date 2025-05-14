@@ -107,6 +107,11 @@ export default (sequelize, DataTypes) => {
         updatedAt: 'updated_at',
     });
 
+    Appointment.BOOKED = 1;
+    Appointment.CHECK_IN = 2;
+    Appointment.CHECK_OUT = 3;
+    Appointment.CANCELLED = 4;
+
     Appointment.associate = (models) => {
         Appointment.belongsTo(models.Doctor, { foreignKey: 'doctor_id' });
     };

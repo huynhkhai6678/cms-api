@@ -27,6 +27,7 @@ export default (sequelize, DataTypes) => {
             dob: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                defaultValue: '',
             },
             gender: {
                 type: DataTypes.INTEGER,
@@ -80,26 +81,32 @@ export default (sequelize, DataTypes) => {
             race: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                defaultValue: '',
             },
             ethnicity: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                defaultValue: '',
             },
             id_type: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                defaultValue: '',
             },
             id_number: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                defaultValue: '',
             },
             nationality: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                defaultValue: '',
             },
             religion: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                defaultValue: '',
             },
             remember_token: {
                 type: DataTypes.STRING(100),
@@ -139,6 +146,7 @@ export default (sequelize, DataTypes) => {
             show_all_data: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
+                defaultValue: true,
             },
             clinic_chain_id: {
                 type: DataTypes.BIGINT.UNSIGNED,
@@ -146,10 +154,17 @@ export default (sequelize, DataTypes) => {
             },
         },
         {
+            tableName: 'users',
             createdAt: 'created_at',
             updatedAt: 'updated_at',
         }
     );
+
+    User.ADMIN = 1;
+    User.DOCTOR = 2;
+    User.PATIENT = 3;
+    User.STAFF = 4;
+    User.SUPER_ADMIN = 5;
 
     User.associate = (models) => {
         User.hasOne(models.Address, {
@@ -161,7 +176,32 @@ export default (sequelize, DataTypes) => {
           }
         });
 
-        User.hasMany(models.UserClinic, { foreignKey: 'user_id' })
+        User.belongsTo(models.ClinicChain, { 
+            foreignKey: 'clinic_chain_id',
+            as : 'clinic_chain'
+        });
+
+        User.hasMany(models.UserClinic, { 
+            foreignKey: 'user_id',
+            as : 'user_clinics'
+        });
+
+        User.hasOne(models.Doctor, { 
+            foreignKey: 'user_id',
+            as : 'doctor'
+        });
+
+        User.hasOne(models.Patient, { 
+            foreignKey: 'user_id',
+            as : 'patient'
+        });
+
+        User.belongsToMany(models.Clinic, {
+            through: models.UserClinic,
+            foreignKey: 'user_id',
+            otherKey: 'clinic_id',
+            as: 'clinics'
+        });
     };
 
     return User;

@@ -7,6 +7,7 @@ const { Op } = Sequelize;
  */
 async function paginateAndSearch({
   model,
+  attributes = [],
   searchFields = [],
   filterFields = [],
   include = [],
@@ -60,6 +61,8 @@ async function paginateAndSearch({
     limit: +limit,
     offset: +offset,
     order: [[Sequelize.literal(`\`${safeOrderBy}\``), safeOrder]],
+    attributes,
+    distinct: true,
   });
 
   return {

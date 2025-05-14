@@ -23,5 +23,18 @@ export default (sequelize, DataTypes) => {
         }
     );
 
+    Permission.associate = (models) => {
+        // Permission.belongsToMany(models.Role, {
+        //     through: {
+        //         model: 'role_has_permissions',
+        //         timestamps: false,
+        //     },
+        //     foreignKey: 'permission_id',
+        //     otherKey: 'role_id',
+        // });
+    };
+
+    
+
     return Permission;
 };

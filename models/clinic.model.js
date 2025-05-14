@@ -22,10 +22,12 @@ export default (sequelize, DataTypes) => {
             default: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
+                defaultValue : false,
             },
             code: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
+                defaultValue : '',
             },
             landing_name: {
                 type: DataTypes.STRING(255),
@@ -46,13 +48,11 @@ export default (sequelize, DataTypes) => {
             country_id: {
                 type: DataTypes.BIGINT.UNSIGNED,
                 allowNull: false,
+                defaultValue: 0
             },
             type: {
                 type: DataTypes.TINYINT,
                 allowNull: false,
-                get() {
-                    return CATEGORIES[this.getDataValue('type')];
-                }
             },
             created_at: {
                 type: DataTypes.DATE,
@@ -62,6 +62,12 @@ export default (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            type_text: {
+                type: DataTypes.VIRTUAL,
+                get() {
+                  return CATEGORIES[this.getDataValue('type')];
+                }
+            }
         },
         {
             tableName: 'clinics',
@@ -78,6 +84,11 @@ export default (sequelize, DataTypes) => {
             scope: {
               owner_type: 'App\\Models\\Clinic'
             }
+        });
+        Clinic.belongsToMany(models.ClinicChain, {
+            through: models.ClinicChainGroup,
+            foreignKey: 'clinic_id',
+            otherKey: 'clinic_chain_id',
         });
     };
 
